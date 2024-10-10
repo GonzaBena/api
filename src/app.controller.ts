@@ -10,22 +10,11 @@ export class AppController {
     private readonly db: DatabaseService,
   ) {}
 
-  @Post('saludo-business')
-  async saludoBusiness(): Promise<Observable<any>> {
-    this.db.connect()
-    return await this.appService.sendToMicroservice(
-      'localhost',
-      3002,
-      'hello',
-      {
-        mail: 'usuario@example.com',
-        password: 'password123',
-      },
-    )
-  }
-
   @Post('saludo-login')
   async saludoLogin(): Promise<Observable<any>> {
+    await this.db.connect()
+    console.log('usuarios: ', await this.db.getUsers())
+    await this.db.close()
     return await this.appService.sendToMicroservice(
       'localhost',
       3001,
