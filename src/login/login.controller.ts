@@ -2,11 +2,11 @@ import { Controller, Post, Body } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { LoginService } from './login.service'
 
-@Controller('login')
+@Controller('')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  @Post()
+  @MessagePattern('login')
   async login(@Body() registerDto: { mail: string; password: string }) {
     console.log('login')
 
@@ -15,13 +15,8 @@ export class LoginController {
       password: registerDto.password,
     })
   }
-}
 
-@Controller('register')
-export class RegisterController {
-  constructor(private readonly loginService: LoginService) {}
-
-  @Post()
+  @MessagePattern('register')
   async register(@Body() registerDto: { mail: string; password: string }) {
     console.log('register')
 
