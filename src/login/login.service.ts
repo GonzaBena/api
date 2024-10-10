@@ -1,3 +1,4 @@
+import { User } from '@/schemas/user'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -7,9 +8,9 @@ export class LoginService {
     return { message: 'Login exitoso' }
   }
 
-  register(data: { username: string; password: string }) {
+  register(data: User) {
     // Lógica de registro
-    return { message: 'Registro exitoso' }
+    return { ...data, created_at: new Date().toUTCString() }
   }
 
   saludo() {

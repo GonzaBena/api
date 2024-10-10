@@ -1,7 +1,9 @@
-import { Controller, Get, Post } from '@nestjs/common'
+import { Controller, Get, Post, Body } from '@nestjs/common'
 import { AppService } from './app.service'
 import { Observable } from 'rxjs'
 import { DatabaseService } from './database/database.service'
+import { ObjectId } from 'mongodb'
+import { User } from '@schemas/user'
 
 @Controller()
 export class AppController {
@@ -14,6 +16,10 @@ export class AppController {
   async saludoLogin(): Promise<Observable<any>> {
     await this.db.connect()
     console.log('usuarios: ', await this.db.getUsers())
+    console.log(
+      'usuarios: ',
+      await this.db.getUser(new ObjectId('670805a425a53d1baba4ecab')),
+    )
     await this.db.close()
     return await this.appService.sendToMicroservice(
       'localhost',
@@ -40,10 +46,12 @@ export class AppController {
   }
 
   @Post('register')
-  async register(): Promise<Observable<any>> {
-    return this.appService.sendToMicroservice('localhost', 3001, 'register', {
-      mail: 'usuario@example.com',
-      password: 'password123',
-    })
+  async register(@Body() req: User): Promise<Observable<any>> {
+    return this.appService.sendToMicroservice(
+      'localhost',
+      3001,
+      'register',
+      req,
+    )
   }
 }

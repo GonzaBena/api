@@ -2,17 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { firstValueFrom, of } from 'rxjs'
+import { DatabaseService } from './database/database.service'
+import { ObjectId } from 'mongodb'
 
 describe('AppController', () => {
   let appController: AppController
+  let appService: AppService
+  let db: DatabaseService
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [AppService, DatabaseService],
     }).compile()
 
     appController = app.get<AppController>(AppController)
+    appService = app.get<AppService>(AppService)
+    db = app.get<DatabaseService>(DatabaseService)
   })
 
   describe('root', () => {
@@ -25,13 +31,13 @@ describe('AppController', () => {
       expect(result).toEqual({ message: 'Hola Login' })
     })
 
-    it('should return "business"', async () => {
-      const observable = await appController.saludoBusiness()
+    it('should return "gonzo" like a name', async () => {
+      db.connect()
 
-      const result = await firstValueFrom(observable)
-      console.log('result', result)
+      const result = await db.getUser(new ObjectId('670805a425a53d1baba4ecab'))
+      db.close()
 
-      expect(result).toEqual({ message: 'Hola Business' })
+      expect(result.email).toEqual('string@example.com')
     })
   })
 })

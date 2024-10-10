@@ -1,10 +1,17 @@
 import { Controller, Post, Body } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { LoginService } from './login.service'
+import { User } from '@/schemas/user'
+import { DatabaseService } from '@/database/database.service'
+import { CryptographyService } from '@/cryptography/cryptography.service'
 
 @Controller('')
 export class LoginController {
-  constructor(private readonly loginService: LoginService) {}
+  constructor(
+    private readonly loginService: LoginService,
+    private readonly db: DatabaseService,
+    private readonly crypto: CryptographyService,
+  ) {}
 
   @MessagePattern('hello')
   async hello() {
@@ -15,8 +22,6 @@ export class LoginController {
 
   @MessagePattern('login')
   async login(@Body() registerDto: { mail: string; password: string }) {
-    console.log('login')
-
     return this.loginService.login({
       username: registerDto.mail,
       password: registerDto.password,
@@ -24,12 +29,28 @@ export class LoginController {
   }
 
   @MessagePattern('register')
-  async register(@Body() registerDto: { mail: string; password: string }) {
-    console.log('register')
+  async register(@Body() user: User) {
+    const esEmailValido = (email: string): boolean => {
+      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$/
+      return regex.test(email)
+    }
+    console.log('user', user)
 
-    return this.loginService.register({
-      username: registerDto.mail,
-      password: registerDto.password,
-    })
+    if (!esEmailValido(user.email)) {
+      return 'Email invalido'
+    }
+
+    if (user.password.length < 8)
+      return 'The password should be more than 8 characters'
+
+    const userExists = await this.db.getUserByEmail(user.email)
+    if (userExists) return 'User already exists'
+
+    const hash = await this.crypto.encrypt(user.password)
+    user.password = hash
+
+    this.db.addUser(user)
+
+    return this.loginService.register(user)
   }
 }
