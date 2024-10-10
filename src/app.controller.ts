@@ -1,8 +1,15 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Query,
+} from '@nestjs/common'
 import { AppService } from './app.service'
 import { Observable } from 'rxjs'
 import { DatabaseService } from './database/database.service'
-import { ObjectId } from 'mongodb'
 import { User } from '@schemas/user'
 import { JwtAuthGuard } from './auth/jwt/jwt.guard'
 
@@ -15,13 +22,6 @@ export class AppController {
 
   @Post('saludo-login')
   async saludoLogin(): Promise<Observable<any>> {
-    await this.db.connect()
-    console.log('usuarios: ', await this.db.getUsers())
-    console.log(
-      'usuarios: ',
-      await this.db.getUser(new ObjectId('670805a425a53d1baba4ecab')),
-    )
-    await this.db.close()
     return await this.appService.sendToMicroservice(
       'localhost',
       3001,
@@ -56,6 +56,33 @@ export class AppController {
       'generateToken',
       req,
     )
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('users')
+  async getUsers(
+    @Req() req: { user: User },
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<Observable<any>> {
+    console.log('req', req.user)
+    console.log('page', page)
+    console.log('limit', limit)
+    return this.appService.sendToMicroservice('localhost', 3002, 'users', {
+      page,
+      limit,
+    })
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('users/search')
+  async searchUsers(
+    @Req() req: { user: User },
+    @Query('email') email: string = '',
+  ): Promise<Observable<any>> {
+    return this.appService.sendToMicroservice('localhost', 3002, 'search', {
+      email,
+    })
   }
 
   @Post('register')

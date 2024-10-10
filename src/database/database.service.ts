@@ -43,9 +43,14 @@ export class DatabaseService {
     }
   }
 
-  async getUsers(): Promise<any> {
+  async getUsers(page: number = 1, limit: number = 10): Promise<any> {
     if (!this.client) await this.connect()
-    return this.collection.find().toArray()
+    limit = limit < 10 ? 10 : parseInt(limit.toString())
+    return this.collection
+      .find()
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .toArray()
   }
 
   async getUser(id: ObjectId): Promise<User> {
@@ -64,6 +69,11 @@ export class DatabaseService {
   async addUser(user: User) {
     if (!this.client) await this.connect()
     await this.collection.insertOne(user)
+  }
+
+  async addUsers(users: User[]) {
+    if (!this.client) await this.connect()
+    await this.collection.insertMany(users)
   }
 
   async updateUser(id: number, user: User) {}
