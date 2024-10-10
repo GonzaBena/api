@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { firstValueFrom, of } from 'rxjs'
 
 describe('AppController', () => {
   let appController: AppController
@@ -15,8 +16,22 @@ describe('AppController', () => {
   })
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      //expect(appController.getHello()).toBe('Hello World!')
+    it('should return "login"', async () => {
+      const observable = await appController.saludoLogin()
+
+      const result = await firstValueFrom(observable)
+      console.log('result', result)
+
+      expect(result).toEqual({ message: 'Hola Login' })
+    })
+
+    it('should return "business"', async () => {
+      const observable = await appController.saludoBusiness()
+
+      const result = await firstValueFrom(observable)
+      console.log('result', result)
+
+      expect(result).toEqual({ message: 'Hola Business' })
     })
   })
 })

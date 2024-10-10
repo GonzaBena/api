@@ -6,6 +6,13 @@ import { LoginService } from './login.service'
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
+  @MessagePattern('hello')
+  async hello() {
+    console.log('hello')
+
+    return this.loginService.saludo()
+  }
+
   @MessagePattern('login')
   async login(@Body() registerDto: { mail: string; password: string }) {
     console.log('login')

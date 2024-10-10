@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
-export class BusinessService {}
+export class BusinessService {
+  saludo() {
+    return { message: 'Hola Business' }
+  }
+}

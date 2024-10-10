@@ -11,4 +11,8 @@ export class LoginService {
     // Lógica de registro
     return { message: 'Registro exitoso' }
   }
+
+  saludo() {
+    return { message: 'Hola Login' }
+  }
 }
