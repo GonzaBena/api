@@ -16,4 +16,9 @@ export class LoginService {
   saludo() {
     return { message: 'Hola Login' }
   }
+
+  generateToken(user: User) {
+    // Generar token
+    return { token: '' }
+  }
 }

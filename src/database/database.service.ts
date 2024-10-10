@@ -8,6 +8,7 @@ import {
   ServerApiVersion,
 } from 'mongodb'
 import { User } from '@schemas/user'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class DatabaseService {
@@ -17,8 +18,7 @@ export class DatabaseService {
 
   async connect() {
     if (this.client) await this.client.close()
-    const uri =
-      'mongodb+srv://gonzalo:gonzalo1@cluster0.g3qjlpl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+    const uri = new ConfigService().get<string>('URI_DB')
     const client = new MongoClient(uri, {
       serverApi: {
         version: ServerApiVersion.v1,
@@ -56,7 +56,9 @@ export class DatabaseService {
 
   async getUserByEmail(email: string): Promise<User> {
     if (!this.client) await this.connect()
-    return this.collection.findOne({ email }) as Promise<User>
+    return this.collection.findOne({
+      email: email.trim().toLowerCase(),
+    }) as Promise<User>
   }
 
   async addUser(user: User) {

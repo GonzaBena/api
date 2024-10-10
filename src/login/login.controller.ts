@@ -1,9 +1,11 @@
-import { Controller, Post, Body } from '@nestjs/common'
+import { Controller, Post, Body, UseGuards } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { LoginService } from './login.service'
 import { User } from '@/schemas/user'
 import { DatabaseService } from '@/database/database.service'
 import { CryptographyService } from '@/cryptography/cryptography.service'
+import { JwtAuthGuard } from '@/auth/jwt/jwt.guard'
+import { AuthService } from '@/auth/auth.service'
 
 @Controller('')
 export class LoginController {
@@ -11,6 +13,7 @@ export class LoginController {
     private readonly loginService: LoginService,
     private readonly db: DatabaseService,
     private readonly crypto: CryptographyService,
+    private readonly auth: AuthService,
   ) {}
 
   @MessagePattern('hello')
@@ -26,6 +29,11 @@ export class LoginController {
       username: registerDto.mail,
       password: registerDto.password,
     })
+  }
+
+  @MessagePattern('generateToken')
+  async generateToken(@Body() user: User) {
+    return this.auth.login(user)
   }
 
   @MessagePattern('register')

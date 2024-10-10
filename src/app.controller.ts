@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body } from '@nestjs/common'
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common'
 import { AppService } from './app.service'
 import { Observable } from 'rxjs'
 import { DatabaseService } from './database/database.service'
 import { ObjectId } from 'mongodb'
 import { User } from '@schemas/user'
+import { JwtAuthGuard } from './auth/jwt/jwt.guard'
 
 @Controller()
 export class AppController {
@@ -42,6 +43,18 @@ export class AppController {
         mail: 'usuario@example.com',
         password: 'password123',
       },
+    )
+  }
+
+  @Post('generate-token')
+  async generateToken(@Body() req: User): Promise<Observable<any>> {
+    console.log('req', req)
+
+    return this.appService.sendToMicroservice(
+      'localhost',
+      3001,
+      'generateToken',
+      req,
     )
   }
 
