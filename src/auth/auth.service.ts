@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { DatabaseService } from '@/database/database.service'
-import { CryptographyService } from '@/cryptography/cryptography.service'
-import { User } from '@/schemas/user'
+import { DatabaseService } from '../database/database.service'
+import { CryptographyService } from '../cryptography/cryptography.service'
+import { User } from '../schemas/user'
 import { ConfigService } from '@nestjs/config'
 
 @Injectable()

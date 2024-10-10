@@ -2,7 +2,7 @@
 import { Controller, Request, Post, UseGuards, Get, Body } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { JwtAuthGuard } from './jwt/jwt.guard'
-import { User } from '@/schemas/user'
+import { User } from '../schemas/user'
 import { MessagePattern } from '@nestjs/microservices'
 
 @Controller('auth')

@@ -4,21 +4,26 @@ import { AppService } from './app.service'
 import { firstValueFrom, of } from 'rxjs'
 import { DatabaseService } from './database/database.service'
 import { ObjectId } from 'mongodb'
+import { JwtService } from '@nestjs/jwt'
+import { CryptographyService } from './cryptography/cryptography.service'
 
 describe('AppController', () => {
   let appController: AppController
   let appService: AppService
   let db: DatabaseService
+  let jwt: JwtService
+  let crypto: CryptographyService
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService, DatabaseService],
+      providers: [AppService, DatabaseService, JwtService, CryptographyService],
     }).compile()
 
     appController = app.get<AppController>(AppController)
     appService = app.get<AppService>(AppService)
     db = app.get<DatabaseService>(DatabaseService)
+    jwt = app.get<JwtService>(JwtService)
   })
 
   describe('root', () => {

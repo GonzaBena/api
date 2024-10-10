@@ -1,4 +1,4 @@
-import { User } from '@/schemas/user'
+import { User } from '../schemas/user'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()

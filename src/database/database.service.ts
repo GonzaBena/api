@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import {
   Collection,
-  CollectionInfo,
   Db,
   MongoClient,
   ObjectId,
@@ -17,8 +16,12 @@ export class DatabaseService {
   private collection: Collection<User>
 
   async connect() {
-    if (this.client) await this.client.close()
     const uri = new ConfigService().get<string>('URI_DB')
+
+    if (!uri) {
+      throw new Error('The URI_DB environment variable is not set')
+    }
+
     const client = new MongoClient(uri, {
       serverApi: {
         version: ServerApiVersion.v1,
@@ -37,6 +40,7 @@ export class DatabaseService {
       console.log(
         'Pinged your deployment. You successfully connected to MongoDB!',
       )
+      return 'Connected to database'
     } catch {
       // Ensures that the client will close when you finish/error
       this.close()

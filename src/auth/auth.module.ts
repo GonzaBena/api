@@ -3,9 +3,9 @@ import { JwtModule, JwtService } from '@nestjs/jwt'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
-import { DatabaseService } from '@/database/database.service'
+import { DatabaseService } from '../database/database.service'
 import { JwtStrategy } from './jwt.strategy'
-import { CryptographyService } from '@/cryptography/cryptography.service'
+import { CryptographyService } from '../cryptography/cryptography.service'
 
 @Module({
   imports: [

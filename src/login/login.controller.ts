@@ -1,11 +1,10 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { LoginService } from './login.service'
-import { User } from '@/schemas/user'
-import { DatabaseService } from '@/database/database.service'
-import { CryptographyService } from '@/cryptography/cryptography.service'
-import { JwtAuthGuard } from '@/auth/jwt/jwt.guard'
-import { AuthService } from '@/auth/auth.service'
+import { User } from '../schemas/user'
+import { DatabaseService } from '../database/database.service'
+import { CryptographyService } from '../cryptography/cryptography.service'
+import { AuthService } from '../auth/auth.service'
 
 @Controller('')
 export class LoginController {

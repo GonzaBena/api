@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { BusinessService } from './business.service'
-import { DatabaseService } from '@/database/database.service'
+import { DatabaseService } from '../database/database.service'
 
 @Controller('business')
 export class BusinessController {
