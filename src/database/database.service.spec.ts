@@ -3,7 +3,7 @@ import { DatabaseService } from './database.service'
 import { DatabaseController } from './database.controller'
 import { ConfigModule } from '@nestjs/config'
 import { ObjectId } from 'mongodb'
-import { User } from '../schemas/user'
+import { User, UserMongoDB } from '../schemas/user'
 
 describe('DatabaseService', () => {
   let service: DatabaseService
@@ -39,5 +39,38 @@ describe('DatabaseService', () => {
     await service.close()
     expect(user).toBeInstanceOf(Object)
     expect(user.name).toBe('Ana Torres')
+  })
+
+  // get user by email
+  it('should return a user by email', async () => {
+    const user = await service.getUserByEmail('ana.torres@example.com')
+    await service.close()
+    return expect(user.name).toBe('Ana Torres')
+  })
+
+  // add user - It's work but it's not recommended to use it in the test because it will add a user to the database with a email that already exists
+  // it('should add a user', async () => {
+  //   const user = {
+  //     name: 'Juan Perez',
+  //     email: 'juan@example.com',
+  //     password: '1234',
+  //   }
+  //   await service.addUser(user)
+  //   const result = await service.getUserByEmail(user.email)
+  //   await service.close()
+  //   expect(result.name).toBe(user.name)
+  // })
+
+  // delete user
+  it('should delete a user', async () => {
+    const user = (await service.getUserByEmail(
+      'ana.torres@example.com',
+    )) as UserMongoDB // Add the email of the user you want to delete
+    await service.deleteUser(user._id)
+    const result = (await service.getUserByEmail(
+      'ana.torres@example.com',
+    )) as UserMongoDB // Add the email of the user you want to delete
+    await service.close()
+    expect(result).toBeNull()
   })
 })

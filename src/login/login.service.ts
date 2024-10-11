@@ -8,11 +8,6 @@ export class LoginService {
     return { message: 'Login exitoso' }
   }
 
-  register(data: User) {
-    // Lógica de registro
-    return { ...data, created_at: new Date().toUTCString() }
-  }
-
   saludo() {
     return { message: 'Hola Login' }
   }

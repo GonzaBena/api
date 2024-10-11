@@ -1,10 +1,11 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { LoginService } from './login.service'
-import { User } from '../schemas/user'
+import { User, UserMongoDB } from '../schemas/user'
 import { DatabaseService } from '../database/database.service'
 import { CryptographyService } from '../cryptography/cryptography.service'
 import { AuthService } from '../auth/auth.service'
+import { UserDto } from './user.dto'
 
 @Controller('')
 export class LoginController {
@@ -31,33 +32,23 @@ export class LoginController {
   }
 
   @MessagePattern('generateToken')
-  async generateToken(@Body() user: User) {
+  async generateToken(@Body() user: UserDto) {
+    const userExists = await this.db.getUserByEmail(user.email)
+    if (!userExists) return { error: "User doesn't exists" }
     return this.auth.login(user)
   }
 
   @MessagePattern('register')
-  async register(@Body() user: User) {
-    const esEmailValido = (email: string): boolean => {
-      const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$/
-      return regex.test(email)
-    }
-    console.log('user', user)
-
-    if (!esEmailValido(user.email)) {
-      return 'Email invalido'
-    }
-
-    if (user.password.length < 8)
-      return 'The password should be more than 8 characters'
-
+  async register(@Body() user: UserDto) {
     const userExists = await this.db.getUserByEmail(user.email)
-    if (userExists) return 'User already exists'
+    if (userExists) return { error: 'User already exists' }
+    const newUser = user as UserMongoDB
 
-    const hash = await this.crypto.encrypt(user.password)
-    user.password = hash
+    newUser.password = await this.crypto.encrypt(user.password)
+    newUser.created_at = new Date().toISOString()
+    newUser.admin = false
 
     this.db.addUser(user)
-
-    return this.loginService.register(user)
+    return user
   }
 }

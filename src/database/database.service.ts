@@ -6,14 +6,16 @@ import {
   ObjectId,
   ServerApiVersion,
 } from 'mongodb'
-import { User } from '@schemas/user'
+import { User } from '../schemas/user'
 import { ConfigService } from '@nestjs/config'
+import { CryptographyService } from '../cryptography/cryptography.service'
 
 @Injectable()
 export class DatabaseService {
   private client: MongoClient
   private db: Db
   private collection: Collection<User>
+  private crypto = new CryptographyService()
 
   async connect() {
     const uri = new ConfigService().get<string>('URI_DB')
@@ -82,7 +84,10 @@ export class DatabaseService {
 
   async updateUser(id: number, user: User) {}
 
-  async deleteUser(id: number) {}
+  async deleteUser(id: ObjectId) {
+    if (!this.client) await this.connect()
+    return this.collection.deleteOne({ _id: id })
+  }
 
   async close() {
     // Close the connection

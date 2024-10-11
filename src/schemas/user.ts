@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb'
+
 export class User {
   name: string
   email: string
@@ -8,4 +10,13 @@ export class User {
     this.email = email
     this.password = password
   }
+}
+
+export class UserMongoDB {
+  _id: ObjectId
+  name: string
+  email: string
+  password: string
+  created_at?: string
+  admin?: boolean
 }
