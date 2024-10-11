@@ -27,6 +27,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(user, {
         secret: new ConfigService().get<string>('JWT_SECRET'),
+        expiresIn: '60s',
       }),
     }
   }

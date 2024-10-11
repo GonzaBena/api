@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Query,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common'
 import { AppService } from './app.service'
 import { Observable } from 'rxjs'
 import { JwtAuthGuard } from './auth/jwt/jwt.guard'
@@ -11,12 +20,21 @@ export class AppController {
   // ENDPOINT 1
   @Post('register')
   async register(@Body() req: UserDto): Promise<Observable<any>> {
-    return this.appService.sendToMicroservice(
-      'localhost',
-      3001,
-      'register',
-      req,
-    )
+    try {
+      console.log('req', req)
+      return this.appService.sendToMicroservice(
+        'localhost',
+        3001,
+        'register',
+        req,
+      )
+    } catch (error) {
+      console.error('Error in /register:', error)
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      )
+    }
   }
 
   // ENDPOINT 2
