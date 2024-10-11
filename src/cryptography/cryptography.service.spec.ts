@@ -20,7 +20,6 @@ describe('CryptographyService', () => {
   // encrypt
   it('should encrypt a string', async () => {
     const encrypted = await service.encrypt('1234')
-    console.log('encrypted', encrypted, typeof encrypted)
 
     expect(typeof encrypted).toBe('string')
   })

@@ -1,21 +1,16 @@
-import { Controller } from '@nestjs/common'
+import { Controller, UseInterceptors } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { BusinessService } from './business.service'
 import { DatabaseService } from '../database/database.service'
+import { BusinessInterceptor } from './business.interceptor'
 
 @Controller('business')
+@UseInterceptors(BusinessInterceptor)
 export class BusinessController {
   constructor(
     private readonly businessService: BusinessService,
     private readonly db: DatabaseService,
   ) {}
-
-  @MessagePattern('hello')
-  async hello() {
-    console.log('hello')
-
-    return this.businessService.saludo()
-  }
 
   @MessagePattern('users')
   async users({ page, limit }: { page: number; limit: number }) {

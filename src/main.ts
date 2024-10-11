@@ -36,8 +36,5 @@ async function bootstrap() {
 
   await login.listen()
   await business.listen()
-
-  console.log('Microservicio de Login escuchando en el puerto 3001')
-  console.log('Microservicio de Negocios escuchando en el puerto 3002')
 }
 bootstrap()

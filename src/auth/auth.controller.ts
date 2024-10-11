@@ -1,9 +1,16 @@
-// auth.controller.ts
-import { Controller, Request, Post, UseGuards, Get, Body } from '@nestjs/common'
+import {
+  Controller,
+  Request,
+  Post,
+  UseInterceptors,
+  Get,
+  Body,
+} from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { JwtAuthGuard } from './jwt/jwt.guard'
 import { User } from '../schemas/user'
 import { MessagePattern } from '@nestjs/microservices'
+import { UserDto } from '../DTO/user.dto'
 
 @Controller('auth')
 export class AuthController {

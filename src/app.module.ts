@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module'
 import { CryptographyModule } from './cryptography/cryptography.module'
 import { AuthModule } from './auth/auth.module'
 import { JwtService } from '@nestjs/jwt'
+import { LoginService } from './login/login.service'
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { JwtService } from '@nestjs/jwt'
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService, CryptographyModule],
+  providers: [AppService, JwtService, CryptographyModule, LoginService],
 })
 export class AppModule {}
