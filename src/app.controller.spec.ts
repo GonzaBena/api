@@ -6,6 +6,8 @@ import { DatabaseService } from './database/database.service'
 import { ObjectId } from 'mongodb'
 import { JwtService } from '@nestjs/jwt'
 import { CryptographyService } from './cryptography/cryptography.service'
+import { ConfigModule } from '@nestjs/config'
+import { UserDto } from './DTO/user.dto'
 
 describe('AppController', () => {
   let appController: AppController
@@ -13,9 +15,20 @@ describe('AppController', () => {
   let db: DatabaseService
   let jwt: JwtService
   let crypto: CryptographyService
+  const userDto: UserDto = {
+    name: 'test',
+    email: 'test@example.com',
+    password: 'password123',
+  }
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: '.env', // Ruta al archivo .env
+          isGlobal: true, // Hace que ConfigModule esté disponible en todo el módulo de prueba
+        }),
+      ],
       controllers: [AppController],
       providers: [AppService, DatabaseService, JwtService, CryptographyService],
     }).compile()
@@ -27,22 +40,59 @@ describe('AppController', () => {
   })
 
   describe('root', () => {
-    it('should return "login"', async () => {
-      const observable = await appController.saludoLogin()
-
-      const result = await firstValueFrom(observable)
-      console.log('result', result)
-
-      expect(result).toEqual({ message: 'Hola Login' })
-    })
-
     it('should return "gonzo" like a name', async () => {
-      db.connect()
+      await db.connect()
 
       const result = await db.getUser(new ObjectId('670805a425a53d1baba4ecab'))
-      db.close()
+      await db.close()
 
       expect(result.email).toEqual('string@example.com')
+    })
+
+    it('should call generateToken and return an observable', async () => {
+      const result = of({ token: 'jwt-token' })
+      jest
+        .spyOn(appService, 'sendToMicroservice')
+        .mockImplementation(() => Promise.resolve(result))
+
+      expect(
+        await firstValueFrom(await appController.generateToken(userDto)),
+      ).toEqual({ token: 'jwt-token' })
+    })
+
+    it('should call register and return an observable', async () => {
+      const result = of({ success: true })
+      jest
+        .spyOn(appService, 'sendToMicroservice')
+        .mockImplementation(() => Promise.resolve(result))
+
+      expect(
+        await firstValueFrom(await appController.register(userDto)),
+      ).toEqual({
+        success: true,
+      })
+    })
+
+    it('should call getUsers and return an observable', async () => {
+      const result = of({ users: [] })
+      jest
+        .spyOn(appService, 'sendToMicroservice')
+        .mockImplementation(() => Promise.resolve(result))
+      const result1 = await appController.getUsers(1, 10)
+      expect(await firstValueFrom(result1)).toEqual({ users: [] })
+    })
+
+    it('should call searchUsers and return an observable', async () => {
+      const result = of({ users: [] })
+      jest
+        .spyOn(appService, 'sendToMicroservice')
+        .mockImplementation(() => Promise.resolve(result))
+
+      expect(
+        await firstValueFrom(
+          await appController.searchUsers('test@example.com'),
+        ),
+      ).toEqual({ users: [] })
     })
   })
 })

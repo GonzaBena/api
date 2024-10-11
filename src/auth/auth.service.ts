@@ -16,7 +16,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     // Verifica el usuario con el servicio de usuarios
     const user = await this.db.getUserByEmail(email)
-    if (user && this.crypto.decrypt(password, user.password)) {
+    if (user && (await this.crypto.decrypt(password, user.password))) {
       const { password, ...result } = user
       return result
     }

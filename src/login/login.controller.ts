@@ -5,7 +5,7 @@ import { User, UserMongoDB } from '../schemas/user'
 import { DatabaseService } from '../database/database.service'
 import { CryptographyService } from '../cryptography/cryptography.service'
 import { AuthService } from '../auth/auth.service'
-import { UserDto } from './user.dto'
+import { UserDto } from '../DTO/user.dto'
 
 @Controller('')
 export class LoginController {
@@ -15,21 +15,6 @@ export class LoginController {
     private readonly crypto: CryptographyService,
     private readonly auth: AuthService,
   ) {}
-
-  @MessagePattern('hello')
-  async hello() {
-    console.log('hello')
-
-    return this.loginService.saludo()
-  }
-
-  @MessagePattern('login')
-  async login(@Body() registerDto: { mail: string; password: string }) {
-    return this.loginService.login({
-      username: registerDto.mail,
-      password: registerDto.password,
-    })
-  }
 
   @MessagePattern('generateToken')
   async generateToken(@Body() user: UserDto) {

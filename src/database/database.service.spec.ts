@@ -35,10 +35,42 @@ describe('DatabaseService', () => {
 
   //get user
   it('should return a user', async () => {
-    const user = await service.getUser(new ObjectId('6708385e5bf31e40b5f73a8e'))
+    const user = await service.getUser(new ObjectId('670805a425a53d1baba4ecab'))
     await service.close()
     expect(user).toBeInstanceOf(Object)
-    expect(user.name).toBe('Ana Torres')
+    expect(user.name).toBe('gonzo')
+  })
+
+  // get user
+  it('should return a user', async () => {
+    const user = await service.getUser(new ObjectId('670805a425a53d1baba4ecab'))
+    await service.close()
+    expect(user).toBeInstanceOf(Object)
+    expect(user.name).toBe('gonzo')
+  })
+
+  // get user by invalid id
+  it('should return null for an invalid user id', async () => {
+    const user = await service.getUser(new ObjectId('000000000000000000000000'))
+    await service.close()
+    expect(user).toBeNull()
+  })
+  // mock function for getUser
+  it('should call getUser with correct parameters', async () => {
+    const getUserSpy = jest.spyOn(service, 'getUser').mockResolvedValue({
+      _id: new ObjectId('670805a425a53d1baba4ecab'),
+      name: 'gonzo',
+      email: 'gonzo@example.com',
+    } as UserMongoDB)
+
+    const user = await service.getUser(new ObjectId('670805a425a53d1baba4ecab'))
+
+    expect(getUserSpy).toHaveBeenCalledWith(
+      new ObjectId('670805a425a53d1baba4ecab'),
+    )
+    expect(user.name).toBe('gonzo')
+
+    getUserSpy.mockRestore()
   })
 
   // get user by email
@@ -62,15 +94,16 @@ describe('DatabaseService', () => {
   // })
 
   // delete user
-  it('should delete a user', async () => {
-    const user = (await service.getUserByEmail(
-      'ana.torres@example.com',
-    )) as UserMongoDB // Add the email of the user you want to delete
-    await service.deleteUser(user._id)
-    const result = (await service.getUserByEmail(
-      'ana.torres@example.com',
-    )) as UserMongoDB // Add the email of the user you want to delete
-    await service.close()
-    expect(result).toBeNull()
-  })
+  // funciona pero no es recomendable usarlo en la prueba porque eliminará un usuario de la base de datos con un correo electrónico que ya existe y los demas test no funcionarian posteriormente
+  // it('should delete a user', async () => {
+  //   const user = (await service.getUserByEmail(
+  //     'ana.torres@example.com',
+  //   )) as UserMongoDB // Add the email of the user you want to delete
+  //   await service.deleteUser(user._id)
+  //   const result = (await service.getUserByEmail(
+  //     'ana.torres@example.com',
+  //   )) as UserMongoDB // Add the email of the user you want to delete
+  //   await service.close()
+  //   expect(result).toBeNull()
+  // })
 })

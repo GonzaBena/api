@@ -6,7 +6,7 @@ import {
   ObjectId,
   ServerApiVersion,
 } from 'mongodb'
-import { User } from '../schemas/user'
+import { User, UserMongoDB } from '../schemas/user'
 import { ConfigService } from '@nestjs/config'
 import { CryptographyService } from '../cryptography/cryptography.service'
 
@@ -43,9 +43,11 @@ export class DatabaseService {
         'Pinged your deployment. You successfully connected to MongoDB!',
       )
       return 'Connected to database'
-    } catch {
+    } catch (error) {
+      console.error('Failed to connect to the database:', error)
       // Ensures that the client will close when you finish/error
-      this.close()
+      await this.close()
+      throw new Error('Failed to connect to the database')
     }
   }
 
@@ -59,10 +61,12 @@ export class DatabaseService {
       .toArray()
   }
 
-  async getUser(id: ObjectId): Promise<User> {
+  async getUser(id: ObjectId): Promise<UserMongoDB> {
     if (!this.client) await this.connect()
-    if (!id) return null
-    return this.collection.findOne({ _id: id }) as Promise<User>
+    if (!id || !ObjectId.isValid(id)) {
+      throw new Error('Invalid ObjectId')
+    }
+    return this.collection.findOne({ _id: id }) as Promise<UserMongoDB>
   }
 
   async getUserByEmail(email: string): Promise<User> {
